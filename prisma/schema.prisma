@@ -1,0 +1,71 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  password Password?
+  notes    Note[]
+  cards    Card[]
+}
+
+model Password {
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+model Note {
+  id    String @id @default(cuid())
+  title String
+  body  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+}
+
+model Card {
+  id      String @id @default(cuid())
+  content String // one line string or multi line markdown
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   Card?  @relation(name: "parent", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children Card[] @relation(name: "parent")
+  parentId String?
+
+  resolution   Card?  @relation(name: "resolution", fields: [resolutionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  resolves     Card[] @relation(name: "resolution")
+  resolutionId String?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  flags  Flag[]
+}
+
+model Flag {
+  id      String @id @default(cuid())
+  keyword String
+  input   String // the exact text which caused the keyword to be added
+
+  createdAt DateTime @default(now())
+
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  cardId String
+}
