@@ -35,7 +35,7 @@ export default function CardEntry({ parent }: CardEntryParams) {
           name="content"
           id="query"
           className="block w-full border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:rounded-md sm:text-sm"
-          placeholder="Card title"
+          placeholder="Add task"
           aria-describedby="query-description"
         />
       </div>

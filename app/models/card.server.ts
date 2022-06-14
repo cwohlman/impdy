@@ -34,6 +34,32 @@ export async function getActiveCards({
   });
 }
 
+export async function getDoneCards({
+  userId,
+}: {
+  userId: string;
+}): Promise<ExtendedCard[]> {
+  return prisma.card.findMany({
+    where: {
+      OR: [
+        { userId },
+        { authorId: userId },
+        { assigneeId: userId },
+        { project: { shares: { some: { userId } } } },
+      ],
+      resolutionId: { not: null },
+    },
+    include: {
+      parent: true,
+      children: true,
+      resolution: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
 export async function getCard({
   cardId,
   userId,
@@ -61,8 +87,8 @@ export async function getCard({
       parent: true,
       children: {
         include: {
-          resolution: true
-        }
+          resolution: true,
+        },
       },
       resolution: true,
     },
@@ -72,29 +98,41 @@ export async function getCard({
   });
 }
 
-export function createCard({
+export async function createCard({
   content,
   userId,
   parentId,
-}: Pick<Card, "content" | "parentId"> & {
-  userId: User["id"];
+  resolvesParent,
+}: {
+  userId: string;
+  content: string;
+  parentId?: string;
+  resolvesParent?: boolean;
 }) {
+  const parent =
+    typeof parentId == "string"
+      ? await prisma.card.findFirst({ where: { id: parentId } })
+      : null;
+
   return prisma.card.create({
     data: {
       content,
       // TODO: the projectId should be the parent card's projectId
       // TODO: auto-generate tags
-      parent: parentId ? { connect: { id: parentId } } : undefined,
-      user: {
-        connect: {
-          id: userId, // TODO: the ownerId should be parent card's ownerId.
-        },
-      },
-      author: {
-        connect: {
-          id: userId,
-        },
-      },
+      parentId: parentId ? parentId : undefined,
+      userId: parent ? parent.userId : userId,
+      projectId: parent ? parent.projectId : undefined,
+      authorId: userId,
+
+      resolves:
+        parent && resolvesParent ? { connect: { id: parent.id } } : undefined,
     },
+  });
+}
+
+export async function unresolveCard({ cardId }: { cardId: string }) {
+  return prisma.card.update({
+    where: { id: cardId },
+    data: { resolutionId: null },
   });
 }
