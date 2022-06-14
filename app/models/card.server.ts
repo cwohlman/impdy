@@ -38,7 +38,7 @@ export async function getCard({
 }: {
   cardId: string;
   userId: string;
-}) {
+}): Promise<ExtendedCard | null> {
   return prisma.card.findFirst({
     where: {
       AND: [
@@ -57,7 +57,11 @@ export async function getCard({
     },
     include: {
       parent: true,
-      children: true,
+      children: {
+        include: {
+          resolution: true
+        }
+      },
       resolution: true,
     },
     orderBy: {
@@ -69,7 +73,8 @@ export async function getCard({
 export function createCard({
   content,
   userId,
-}: Pick<Card, "content"> & {
+  parentId,
+}: Pick<Card, "content" | "parentId"> & {
   userId: User["id"];
 }) {
   return prisma.card.create({
@@ -77,6 +82,7 @@ export function createCard({
       content,
       // TODO: the projectId should be the parent card's projectId
       // TODO: auto-generate tags
+      parent: parentId ? { connect: { id: parentId } } : undefined,
       user: {
         connect: {
           id: userId, // TODO: the ownerId should be parent card's ownerId.

@@ -39,6 +39,8 @@ export default function CardEntry({ parent }: CardEntryParams) {
           aria-describedby="query-description"
         />
       </div>
+
+      <input name="parentId" type="hidden" className="hidden" value={parent?.id} />
     </Form>
   );
 }

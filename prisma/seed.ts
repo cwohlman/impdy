@@ -47,7 +47,28 @@ async function seed() {
       authorId: user.id,
     }
   })
-  
+  const task1 = await prisma.card.create({
+    data: {
+      parentId: cardOne.id,
+      content: "Initial working list",
+      userId: user.id,
+      authorId: user.id,
+    }
+  })
+  await prisma.card.create({
+    data: {
+      parentId: task1.id,
+      content: "Done!",
+      userId: user.id,
+      authorId: user.id,
+      resolves: {
+        connect: {
+          id: task1.id
+        }
+      }
+    }
+  })
+
   console.log(`Database has been seeded. 🌱`);
 }
 

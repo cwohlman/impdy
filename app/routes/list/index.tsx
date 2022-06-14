@@ -12,6 +12,8 @@ type LoaderData = {
   cards: Awaited<ReturnType<typeof getAllCards>>;
 };
 
+export { action } from '~/code/createCardAction';
+
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
   return json<LoaderData>({ cards: await getAllCards({ userId }) });
