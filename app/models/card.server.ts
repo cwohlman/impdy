@@ -7,7 +7,7 @@ export type ExtendedCard = Card & {
   children?: Card[];
 };
 
-export async function getAllCards({
+export async function getActiveCards({
   userId,
 }: {
   userId: string;
@@ -20,6 +20,8 @@ export async function getAllCards({
         { assigneeId: userId },
         { project: { shares: { some: { userId } } } },
       ],
+      parentId: null,
+      resolutionId: null,
     },
     include: {
       parent: true,
