@@ -26,7 +26,7 @@ export default function CardEntryAndSearch({
   }, [isSubmitting]);
   
   return (
-    <Form method="post" ref={formRef}>
+    <Form className="" method="post" ref={formRef}>
       <label htmlFor="query" className="block text-sm font-medium text-gray-700 sr-only">
         Search or Create Task
       </label>
@@ -38,7 +38,7 @@ export default function CardEntryAndSearch({
         id="query"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 sm:rounded-md"
         placeholder="Search for or create a new card"
         aria-describedby="query-description"
       />

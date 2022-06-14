@@ -1,5 +1,6 @@
 import ListRoute from './list/index'
 
-export { loader, action  } from './list/index'
+export { action } from '~/code/createCardAction';
+export { loader  } from './list/index'
 
 export default ListRoute
