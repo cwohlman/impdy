@@ -24,22 +24,30 @@ async function seed() {
     },
   });
 
-  await prisma.note.create({
+  var cardOne = await prisma.card.create({
     data: {
-      title: "My first note",
-      body: "Hello, world!",
+      content: "Create IPMDY project",
       userId: user.id,
+      authorId: user.id,
     },
   });
-
-  await prisma.note.create({
+  var cardTwo = await prisma.card.create({
     data: {
-      title: "My second note",
-      body: "Hello, world!",
+      content: "Show IMPDY to Laura",
       userId: user.id,
-    },
-  });
+      authorId: user.id,
+    }
+  })
 
+  await prisma.card.create({
+    data: {
+      parentId: cardOne.id,
+      content: "Get v1 working",
+      userId: user.id,
+      authorId: user.id,
+    }
+  })
+  
   console.log(`Database has been seeded. 🌱`);
 }
 

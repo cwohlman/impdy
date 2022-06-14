@@ -16,7 +16,10 @@ model User {
 
   password Password?
   notes    Note[]
-  cards    Card[]
+  cards    Card[] @relation("user")
+  assignedCards Card[] @relation("assignee")
+  authoredCards Card[] @relation("author")
+  sharedCards CardShare[]
 }
 
 model Password {
@@ -53,10 +56,31 @@ model Card {
   resolves     Card[] @relation(name: "resolution")
   resolutionId String?
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+  project   Card?  @relation(name: "project", fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tasks     Card[] @relation(name: "project")
+  projectId String?
+
+  user   User   @relation(name: "user", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String 
+
+  assignee   User?   @relation(name: "assignee", fields: [assigneeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assigneeId String?
+
+  author   User   @relation(name: "author", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId String
 
   flags  Flag[]
+  shares CardShare[]
+}
+
+model CardShare {
+  cardId String
+  userId String
+
+  card   Card   @relation(fields: [cardId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([cardId, userId])
 }
 
 model Flag {
